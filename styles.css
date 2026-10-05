@@ -153,6 +153,30 @@ body {
   background-color: var(--color-accent-soft);
 }
 
+/* Botón de menú móvil (hamburguesa), oculto en escritorio */
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 2px solid var(--color-primary);
+  border-radius: 0.75rem;
+  background-color: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-duration) ease,
+    border-color var(--transition-duration) ease;
+}
+
+.nav-toggle:hover {
+  background-color: var(--color-accent-soft);
+}
+
 /* Foco visible para teclado (accesibilidad) */
 a:focus-visible,
 button:focus-visible {
@@ -412,9 +436,27 @@ p code {
     flex-wrap: wrap;
   }
 
+  /* Botón visible solo en móvil; el menú colapsa como lista desplegable */
+  .nav-toggle {
+    display: inline-flex;
+  }
+
   .site-nav {
+    display: none;
     order: 3;
     width: 100%;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 0 0.25rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .site-nav.is-open {
+    display: flex;
+  }
+
+  .site-nav a {
+    padding: 0.6rem 0.75rem;
   }
 
   .grid-2,

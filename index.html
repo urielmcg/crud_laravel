@@ -4,8 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Página informativa sobre Laravel 12: qué es, características principales, requisitos e instalación paso a paso. Material de exposición universitaria." />
-  <title>Laravel 12 — Framework PHP para aplicaciones web modernas</title>
+  <title>Laravel — Framework PHP para aplicaciones web modernas</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="incos-logo-transparent.png" />
 </head>
 <body>
   <!-- Encabezado principal con navegación -->
@@ -13,16 +14,20 @@
     <div class="container header-inner">
       <a class="brand" href="#inicio" aria-label="Inicio — Laravel 12">
         <img class="brand-logo" src="incos-logo-transparent.png" alt="Logotipo de INCOS" width="48" height="48" />
-        <span class="brand-text">Laravel <span class="brand-sub">· Exposición Cuarto Bimestre</span></span>
+        <span class="brand-text">Exposición Laravel <span class="brand-sub">Cuarto Bimestre</span></span>
       </a>
-      <nav class="site-nav" aria-label="Navegación principal">
+      <nav id="primary-nav" class="site-nav" aria-label="Navegación principal">
         <a href="#que-es">Qué es</a>
         <a href="#caracteristicas">Características</a>
         <a href="#instalacion">Instalación</a>
         <a href="#recursos">Recursos</a>
+        <a href="#integrantes">Integrantes</a>
       </nav>
       <button id="theme-toggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="Cambiar entre tema claro y oscuro">
         <span class="theme-toggle-icon" aria-hidden="true">☀️</span>
+      </button>
+      <button id="nav-toggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Abrir menú de navegación">
+        <span class="nav-toggle-icon" aria-hidden="true">☰</span>
       </button>
     </div>
   </header>
@@ -221,7 +226,7 @@
         <ul class="resource-list">
           <li>
             <a href="https://crud-laravel-r3dz.onrender.com" target="_blank" rel="noopener">Demo en vivo del CRUD de usuarios</a>
-            <span> — Nuestra práctica desplegada en Render (SQLite).</span>
+            <span> — Nuestra práctica desplegada</span>
           </li>
           <li>
             <a href="https://laravel.com/framework/docs/installation" target="_blank" rel="noopener">Documentación de instalación de Laravel</a>
@@ -236,6 +241,36 @@
             <span> — Videotutoriales recomendados (recurso opcional).</span>
           </li>
         </ul>
+      </div>
+    </section>
+
+    <!-- Integrantes del equipo de exposición -->
+    <section id="integrantes" class="section section-alt" aria-labelledby="integrantes-title">
+      <div class="container">
+        <h2 id="integrantes-title">Integrantes</h2>
+        <p class="section-lead">
+          Equipo de exposición — Programación Web III.
+        </p>
+        <div class="grid grid-3">
+          <article class="card">
+            <h3>Acarapi Cruz Diego Elmer</h3>
+          </article>
+          <article class="card">
+            <h3>Callejas Gutierrez Helena Venus</h3>
+          </article>
+          <article class="card">
+            <h3>Callejas Gutierrez Uriel Matias</h3>
+          </article>
+          <article class="card">
+            <h3>Condori Huaynoca Jorge Raúl</h3>
+          </article>
+          <article class="card">
+            <h3>Marquez Medrano Micaela wara</h3>
+          </article>
+          <article class="card">
+            <h3>Ramos Maydana Gerardo Marcelo</h3>
+          </article>
+        </div>
       </div>
     </section>
   </main>

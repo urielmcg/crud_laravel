@@ -82,4 +82,46 @@
       storeTheme(currentTheme);
     });
   }
+
+  // Menú móvil: muestra u oculta la navegación principal en pantallas pequeñas.
+  var navToggle = document.getElementById("nav-toggle");
+  var primaryNav = document.getElementById("primary-nav");
+  var navIcon = navToggle ? navToggle.querySelector(".nav-toggle-icon") : null;
+
+  // Aplica el estado del menú y sincroniza texto accesible e icono.
+  function setNavOpen(open) {
+    if (!navToggle || !primaryNav) {
+      return;
+    }
+    primaryNav.classList.toggle("is-open", open);
+    navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    navToggle.setAttribute(
+      "aria-label",
+      open ? "Cerrar menú de navegación" : "Abrir menú de navegación"
+    );
+    if (navIcon) {
+      navIcon.textContent = open ? "✕" : "☰";
+    }
+  }
+
+  if (navToggle && primaryNav) {
+    navToggle.addEventListener("click", function () {
+      setNavOpen(!primaryNav.classList.contains("is-open"));
+    });
+
+    // Cierra el menú al elegir una sección.
+    primaryNav.addEventListener("click", function (event) {
+      var link = event.target && event.target.closest ? event.target.closest("a") : null;
+      if (link) {
+        setNavOpen(false);
+      }
+    });
+
+    // Cierra el menú con la tecla Escape.
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        setNavOpen(false);
+      }
+    });
+  }
 })();
