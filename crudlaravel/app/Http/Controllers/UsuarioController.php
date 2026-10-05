@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 // DB: para borrar tablas hijas en transacción (cliente, administrador).
 // QueryException: para capturar el error 1451 de FK y mostrar mensaje amigable en vez de 500.
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\QueryException;
 
 /**
@@ -164,10 +165,15 @@ class UsuarioController extends Controller
         try {
             // Transacción = todo o nada: si algo falla se revierte solo.
             DB::transaction(function () use ($usuario) {
-                // 1. Borrar hijo en `cliente` (si existe). Equivale a tu Cliente::eliminarClienteFisico().
-                DB::table('cliente')->where('usuario_id', $usuario->id_usuario)->delete();
-                // 2. Borrar hijo en `administrador` (si existe). Equivale a Administrador::eliminarConHerencia().
-                DB::table('administrador')->where('usuario_id', $usuario->id_usuario)->delete();
+                // 1. Borrar hijo en `cliente` solo si la tabla existe.
+                // En una base nueva (SQLite) estas tablas hijas pueden no existir.
+                if (Schema::hasTable('cliente')) {
+                    DB::table('cliente')->where('usuario_id', $usuario->id_usuario)->delete();
+                }
+                // 2. Borrar hijo en `administrador` solo si la tabla existe.
+                if (Schema::hasTable('administrador')) {
+                    DB::table('administrador')->where('usuario_id', $usuario->id_usuario)->delete();
+                }
                 // 3. Recién ahora borrar el padre en `usuarios`.
                 $usuario->delete();
             });

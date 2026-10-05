@@ -1,0 +1,16 @@
+# Dependencias instaladas en la imagen, no se copian.
+vendor/
+node_modules/
+
+# Configuración local: en Render se define mediante variables de entorno.
+.env
+
+# Archivos de registro.
+*.log
+
+# Historial git: no es necesario dentro de la imagen.
+.git
+
+# La base SQLite se crea durante la construcción y el arranque,
+# no se debe copiar la base local de desarrollo.
+database/*.sqlite
