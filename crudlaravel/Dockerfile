@@ -4,15 +4,17 @@ FROM php:8.3-apache
 # Directorio de trabajo de la aplicación.
 WORKDIR /var/www/html
 
-# Instalar dependencias del sistema y extensiones PHP requeridas por Laravel + SQLite.
+# Instalar dependencias del sistema (Composer las necesita) y activar mod_rewrite.
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
-    libzip-dev \
-    libsqlite3-dev \
-    && docker-php-ext-install pdo_sqlite sqlite3 mbstring xml bcmath zip curl \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
+
+# Instalador de extensiones PHP (evita el fallo "Cannot find config.m4"
+# de docker-php-ext-install en PHP 8.3 y resuelve dependencias solo).
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions pdo_sqlite bcmath mbstring xml zip curl
 
 # Ajustar el DocumentRoot de Apache hacia /var/www/html/public (requisito de Laravel).
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
