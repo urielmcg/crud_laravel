@@ -1,0 +1,16 @@
+# Paquete duplicado (el CRUD ya está descomprimido en crudlaravel/)
+crudlaravel.zip
+
+# Herramientas locales y seguimiento interno (no van a GitHub)
+.atl/
+.kilo/
+odd/
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+/.vscode/
+/.idea/
+
+# Logs
+*.log

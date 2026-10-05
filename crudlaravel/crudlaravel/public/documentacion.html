@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentación CRUD Laravel — Tabla usuarios | almacenjuvenil → crudlaravel</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body{background:#f1f3f5}
+pre{background:#0d1117;color:#e6edf3;border-radius:.5rem;padding:1rem;overflow:auto;font-size:.82rem}
+code{color:#d63384}
+pre code{color:inherit}
+h2{margin-top:2.5rem;border-bottom:3px solid #0d6efd;padding-bottom:.4rem}
+h3{margin-top:1.5rem;color:#0d6efd}
+.table code{color:#0d6efd}
+.badge-step{background:#0d6efd}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-dark bg-dark sticky-top">
+<div class="container">
+<span class="navbar-brand">Documentación CRUD Laravel — tabla <b>usuarios</b></span>
+<span class="text-light small">almacenjuvenil (PHP plano) → crudlaravel (Laravel 12)</span>
+</div>
+</nav>
+
+<div class="container my-4">
+<div class="alert alert-info">
+<b>Proyecto nuevo:</b> <code>C:\xampp\htdocs\crudlaravel</code> (carpeta hermana, el proyecto <code>almacenjuvenil</code> no se tocó). Base: <b>juvenil</b> (MariaDB XAMPP, usuario root sin password).
+</div>
+
+<h2>0. Índice</h2>
+<ol>
+<li><a href="#inst">Instalación desde 0</a></li>
+<li><a href="#env">Estructura .env</a></li>
+<li><a href="#bd">Base de datos + migración</a></li>
+<li><a href="#modelo">Modelo Usuario</a></li>
+<li><a href="#rutas">Rutas</a></li>
+<li><a href="#create">CREATE: create() + formulario</a></li>
+<li><a href="#store">STORE + validaciones</a></li>
+<li><a href="#read">READ: index() y show()</a></li>
+<li><a href="#update">UPDATE: edit() y update()</a></li>
+<li><a href="#delete">DELETE: destroy() y error FK 1451</a></li>
+<li><a href="#metodos">Métodos y funciones usadas</a></li>
+<li><a href="#run">Cómo correr y probar</a></li>
+<li><a href="#dif">Diferencias: sin Laravel vs con Laravel</a></li>
+</ol>
+
+<h2 id="inst">1. Instalación desde 0 (paso a paso real ejecutado)</h2>
+<h3>1.1 Requisitos verificados</h3>
+<pre><code>php -v              # PHP 8.2.12 (Laravel 12 pide &gt;= 8.2, OK)
+composer --version  # 2.10.2
+php -m              # pdo_mysql, mbstring, openssl, tokenizer, xml, ctype, json → OK</code></pre>
+<h3>1.2 Problema encontrado y solución</h3>
+<p>El primer <code>composer create-project</code> falló con:</p>
+<pre><code>The zip extension and unzip/7z commands are both missing, skipping.
+The php.ini used by your command-line PHP is: C:\xampp\php\php.ini</code></pre>
+<p><b>Solución:</b> en <code>C:\xampp\php\php.ini</code> línea 962 estaba comentado <code>;extension=zip</code> → se cambió a <code>extension=zip</code>. Verificado con <code>php -m | findstr zip</code>.</p>
+<h3>1.3 Crear proyecto (carpeta hermana, no dentro del actual)</h3>
+<pre><code>cd C:\xampp\htdocs
+composer create-project laravel/laravel crudlaravel --no-interaction --prefer-dist
+# Instala Laravel v12.12.2 (la v13 pide PHP 8.3 y se omite sola). Genera .env + APP_KEY + sqlite de demo.</code></pre>
+<p>Estructura creada: <code>app/Models</code>, <code>app/Http/Controllers</code>, <code>routes/web.php</code>, <code>resources/views</code>, <code>database/migrations</code>, <code>.env</code>.</p>
+
+<h2 id="env">2. Estructura .env (solo lo que cambiamos)</h2>
+<p>Tu conexión original (<code>almacenjuvenil/controlador/conexion.php:5-8</code>): host=localhost, db=juvenil, user=root, pass="". Se replica en <code>crudlaravel/.env</code>:</p>
+<pre><code>DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=juvenil
+DB_USERNAME=root
+DB_PASSWORD=
+
+SESSION_DRIVER=file      # antes: database (evita necesitar tabla sessions en MySQL)
+CACHE_STORE=file         # antes: database
+QUEUE_CONNECTION=sync    # antes: database</code></pre>
+<p><b>Qué hace cada una:</b> <code>DB_*</code> = a qué base se conecta Eloquent. <code>SESSION_DRIVER=file</code> guarda sesiones en <code>storage/framework/sessions</code> en vez de la BD. <code>CACHE_STORE=file</code> y <code>QUEUE_CONNECTION=sync</code> evitan necesitar las tablas <code>cache/jobs</code> para este CRUD simple.</p>
+
+<h2 id="bd">3. Base de datos juvenil.sql + migración</h2>
+<p>Dump: 12 tablas (<code>usuarios, administrador, cliente, cargo, empleado, proveedor, producto, compra, detalle_compra, venta, detalle_venta, clienteantiguo</code>). La central es:</p>
+<pre><code>usuarios(id_usuario AI PK, nombreusuario 35, password 35, tipousuario,
+         estado, nombre, paterno, materno, fecha, ci, email)
+FKs que apuntan a ella: administrador.usuario_id, cliente.usuario_id</code></pre>
+<div class="alert alert-warning"><b>Hallazgo crítico:</b> <code>password VARCHAR(35)</code> no alcanza para bcrypt (60 caracteres). Por eso se creó migración que solo amplía la columna, sin borrar tus 11 usuarios reales.</div>
+<p>Archivo: <code>database/migrations/2026_10_04_000001_ajustar_password_usuarios_table.php</code></p>
+<pre><code>// up() con php artisan migrate | down() con migrate:rollback
+if (Schema::hasTable('usuarios')) {
+    Schema::table('usuarios', function (Blueprint $table) {
+        $table-&gt;string('password', 255)-&gt;change(); // 35 → 255
+    });
+}</code></pre>
+<p>Ejecutado y verificado: <code>php artisan migrate --force</code> → <code>DONE</code>, <code>DESCRIBE juvenil.usuarios</code> muestra <code>password varchar(255)</code>. Nota: la BD viva tiene columna extra <code>id_empleado</code> que no está en el .sql; el CRUD la ignora (queda NULL).</p>
+
+<h2 id="modelo">4. Modelo <code>app/Models/Usuario.php</code></h2>
+<pre><code>class Usuario extends Model
+{
+    protected $table = 'usuarios';   // tabla real (no la 'users' de Laravel)
+    protected $primaryKey = 'id_usuario'; // tu PK no se llama 'id'
+    public $incrementing = true;     // autoincremental
+    protected $keyType = 'int';
+    public $timestamps = false;      // tu tabla NO tiene created_at/updated_at
+    protected $fillable = [          // lista blanca para create()/update()
+        'nombreusuario','password','tipousuario','estado',
+        'nombre','paterno','materno','fecha','ci','email',
+    ];
+    protected $hidden = ['password']; // no exponer hash en JSON
+}</code></pre>
+<p><b>Por qué cada línea:</b> sin <code>$primaryKey</code> el Route Model Binding buscaría <code>id</code> y fallaría. Sin <code>$timestamps=false</code> daría <code>unknown column created_at</code>. Sin <code>$fillable</code> daría <code>MassAssignmentException</code>.</p>
+
+<h2 id="rutas">5. Rutas <code>routes/web.php</code></h2>
+<pre><code>use App\Http\Controllers\UsuarioController;
+Route::get('/', fn() =&gt; redirect()-&gt;route('usuarios.index'));
+Route::resource('usuarios', UsuarioController::class);</code></pre>
+<p>Una línea genera las 7 rutas (verificado con <code>php artisan route:list --name=usuarios</code>):</p>
+<table class="table table-bordered table-striped">
+<tr><th>Método</th><th>URL</th><th>Nombre</th><th>Controlador</th></tr>
+<tr><td>GET</td><td>/usuarios</td><td>usuarios.index</td><td>index()</td></tr>
+<tr><td>GET</td><td>/usuarios/create</td><td>usuarios.create</td><td>create()</td></tr>
+<tr><td>POST</td><td>/usuarios</td><td>usuarios.store</td><td>store()</td></tr>
+<tr><td>GET</td><td>/usuarios/{usuario}</td><td>usuarios.show</td><td>show()</td></tr>
+<tr><td>GET</td><td>/usuarios/{usuario}/edit</td><td>usuarios.edit</td><td>edit()</td></tr>
+<tr><td>PUT</td><td>/usuarios/{usuario}</td><td>usuarios.update</td><td>update()</td></tr>
+<tr><td>DELETE</td><td>/usuarios/{usuario}</td><td>usuarios.destroy</td><td>destroy()</td></tr>
+</table>
+
+<h2 id="create">6. CREATE: <code>create()</code> + formulario</h2>
+<pre><code>public function create() { return view('usuarios.create'); }</code></pre>
+<p>Solo muestra <code>resources/views/usuarios/create.blade.php</code> (equivale a tu <code>vista/usuarioform.php</code>). El form apunta a <code>route('usuarios.store')</code> con <code>@csrf</code> (equivale a tu <code>exigirCSRF()</code>), usa <code>old()</code> para conservar lo escrito y <code>@if ($errors)</code> para mostrar fallos.</p>
+
+<h2 id="store">7. STORE + validaciones</h2>
+<pre><code>$datos = $request-&gt;validate([
+  'nombreusuario' =&gt; 'required|string|max:35|unique:usuarios,nombreusuario',
+  'password' =&gt; ['required','string','min:8','regex:/[A-Z]/','regex:/[!@#$%^&amp;*(),.?":{}|&lt;&gt;]/'],
+  'tipousuario' =&gt; 'required|in:administrador,cliente',
+  'estado' =&gt; 'required|in:activo,inactivo',
+  'nombre' =&gt; 'required|string|max:35', 'paterno' =&gt; 'required|string|max:35',
+  'materno' =&gt; 'nullable|string|max:35', 'fecha' =&gt; 'nullable|date',
+  'ci' =&gt; 'nullable|string|max:20', 'email' =&gt; 'nullable|email|max:100',
+]);
+$datos['password'] = Hash::make($datos['password']); // bcrypt, reemplaza password_hash()
+Usuario::create($datos); // usa $fillable
+return redirect()-&gt;route('usuarios.index')-&gt;with('ok','Usuario creado correctamente.');</code></pre>
+<p>La regla de password replica tu <code>validarPasswordServer()</code> (min 8 + mayúscula + símbolo). Si falla, Laravel redirige atrás con errores automáticamente.</p>
+
+<h2 id="read">8. READ: <code>index()</code> y <code>show()</code></h2>
+<pre><code>// index(): equivale a Usuario::listarUsuarios()
+$usuarios = Usuario::orderBy('id_usuario','desc')-&gt;paginate(10);
+return view('usuarios.index', compact('usuarios'));
+
+// show(): Route Model Binding — {usuario} se convierte solo a modelo por PK. 404 si no existe.
+public function show(Usuario $usuario){ return view('usuarios.show', compact('usuario')); }</code></pre>
+<p>La vista <code>index.blade.php</code> itera con <code>@forelse</code>, muestra badges de tipo/estado y botones Ver/Editar + form DELETE con <code>@method('DELETE')</code> (HTML solo sabe GET/POST). <code>{{ $usuarios-&gt;links() }}</code> dibuja la paginación.</p>
+
+<h2 id="update">9. UPDATE: <code>edit()</code> y <code>update()</code></h2>
+<pre><code>public function edit(Usuario $usuario){ return view('usuarios.edit', compact('usuario')); }
+// unique ignora la fila actual para no chocar consigo misma:
+'nombreusuario' =&gt; 'required|...|unique:usuarios,nombreusuario,'.$usuario-&gt;id_usuario.',id_usuario',
+'password' =&gt; ['nullable',...], // opcional al editar
+if (!empty($datos['password'])) { $datos['password'] = Hash::make($datos['password']); }
+else { unset($datos['password']); } // conserva el hash actual, igual que tu actualizar()
+$usuario-&gt;update($datos);</code></pre>
+
+<h2 id="delete">10. DELETE: <code>destroy()</code> y error FK 1451</h2>
+<p><b>Error que viste:</b> <code>SQLSTATE 1451 ... cliente_ibfk_1 ... delete from usuarios where id_usuario=6</code>. El usuario 6 (<code>saulos</code>) tiene hijo <code>cliente id 4 (Centro de Idiomas)</code>; MySQL impide borrar al padre.</p>
+<pre><code>try {
+    DB::transaction(function () use ($usuario) {
+        DB::table('cliente')-&gt;where('usuario_id',$usuario-&gt;id_usuario)-&gt;delete();
+        DB::table('administrador')-&gt;where('usuario_id',$usuario-&gt;id_usuario)-&gt;delete();
+        $usuario-&gt;delete(); // recién ahora el padre
+    });
+    return redirect()-&gt;route('usuarios.index')-&gt;with('ok','Usuario eliminado correctamente.');
+} catch (QueryException $e) {
+    return redirect()-&gt;route('usuarios.index')
+        -&gt;withErrors('No se puede eliminar: tiene registros relacionados. Desactívalo con estado=inactivo.');
+}</code></pre>
+<p>Replica tu lógica <code>usuarioControlador.php:166-185</code> + <code>eliminarConHerencia()</code>. Verificado creando y borrando un usuario temporal con cliente (<code>borrado OK</code>). Para borrado lógico usa <code>$usuario-&gt;update(['estado'=&gt;'inactivo'])</code> como tu <code>desactivar()</code>.</p>
+
+<h2 id="metodos">11. Métodos y funciones usadas (resumen)</h2>
+<table class="table table-bordered table-striped">
+<tr><th>Capa</th><th>Método / Función</th><th>Qué hace</th></tr>
+<tr><td>Eloquent</td><td><code>Usuario::orderBy()-&gt;paginate(10)</code></td><td>Listar con orden + paginación (reemplaza tu SELECT + fetchAll)</td></tr>
+<tr><td>Eloquent</td><td><code>Usuario::create($d)</code> / <code>$u-&gt;update($d)</code> / <code>$u-&gt;delete()</code></td><td>Insert / update / delete usando $fillable y PK <code>id_usuario</code></td></tr>
+<tr><td>Eloquent</td><td><code>Usuario::find($id)</code> / Binding <code>(Usuario $usuario)</code></td><td>Buscar por PK; binding devuelve 404 solo si no existe</td></tr>
+<tr><td>HTTP</td><td><code>$request-&gt;validate([...])</code></td><td>Valida y devuelve solo datos válidos; redirige con errores si falla</td></tr>
+<tr><td>Seguridad</td><td><code>Hash::make($pass)</code></td><td>bcrypt de 60 chars (reemplaza <code>password_hash()</code>)</td></tr>
+<tr><td>BD</td><td><code>DB::transaction(fn)</code> / <code>DB::table()-&gt;where()-&gt;delete()</code></td><td>Todo-o-nada para borrar hijos antes que padre</td></tr>
+<tr><td>Excepción</td><td><code>catch (QueryException $e)</code></td><td>Captura 1451 FK y muestra mensaje amigable</td></tr>
+<tr><td>Respuesta</td><td><code>view('usuarios.x', compact())</code> / <code>redirect()-&gt;route()-&gt;with()</code></td><td>Render Blade / redirigir con mensaje flash <code>session('ok')</code></td></tr>
+<tr><td>Blade</td><td><code>@extends @section @yield @forelse @csrf @method old() $errors</code></td><td>Herencia layout, formularios seguros, conservar input, mostrar errores</td></tr>
+<tr><td>Schema</td><td><code>Schema::hasTable / ::table / $table-&gt;string()-&gt;change()</code></td><td>Migración que amplía password sin perder datos</td></tr>
+<tr><td>Artisan</td><td><code>migrate, route:list, view:cache, serve, tinker</code></td><td>Migrar, verificar rutas/vistas, servir app, probar ORM</td></tr>
+</table>
+
+<h2 id="run">12. Cómo correr y probar</h2>
+<pre><code>cd C:\xampp\htdocs\crudlaravel
+php artisan serve --port=8001
+# abrir: http://127.0.0.1:8001/usuarios
+php artisan route:list --name=usuarios   # ver 7 rutas
+php artisan migrate --force              # ya ejecutada (password → 255)</code></pre>
+
+<h2 id="dif">13. Diferencias: proyecto sin Laravel vs con Laravel</h2>
+<table class="table table-bordered table-striped">
+<tr><th>Aspecto</th><th>almacenjuvenil (PHP plano, tu actual)</th><th>crudlaravel (Laravel)</th></tr>
+<tr><td>Conexión</td><td><code>new PDO(...)</code> manual en <code>conexion.php</code>, <code>require</code> en cada clase</td><td><code>.env</code> + Eloquent, sin requires</td></tr>
+<tr><td>Consultas</td><td>SQL escrito a mano (<code>prepare/query/fetchAll</code> en <code>UsuarioClase.php</code>)</td><td>ORM: <code>Usuario::paginate/create/update/delete</code></td></tr>
+<tr><td>PK no estándar</td><td>Se usa <code>id_usuario</code> directo en el SQL</td><td>Hay que declararlo: <code>$primaryKey='id_usuario'</code> + <code>$timestamps=false</code></td></tr>
+<tr><td>Validación</td><td><code>validarPasswordServer()</code> + <code>header(Location: ...?msg=)</code> manual</td><td><code>$request-&gt;validate()</code> con reglas y mensajes, redirección automática</td></tr>
+<tr><td>Password</td><td><code>password_hash()</code>, columna 35 (se cortaría con bcrypt)</td><td><code>Hash::make()</code> + migración a 255</td></tr>
+<tr><td>Rutas</td><td>Archivos físicos: <code>usuariolista.php, usuarioform.php, usuarioeditar.php</code> + <code>if(isset($_POST))</code></td><td>1 línea <code>Route::resource</code> → 7 rutas con nombres</td></tr>
+<tr><td>Vistas</td><td>PHP + HTML mezclados, <code>require layout</code></td><td>Blade: <code>@extends/@section/@csrf/@method/old()</code></td></tr>
+<tr><td>CSRF</td><td><code>csrf.php + exigirCSRF()</code> manual</td><td><code>@csrf</code> + middleware automático</td></tr>
+<tr><td>Borrado con hijos</td><td><code>if tipousuario==cliente → eliminarClienteFisico / administrador → eliminarConHerencia</code></td><td><code>DB::transaction</code> borra <code>cliente+administrador</code> antes; <code>catch QueryException 1451</code> con mensaje</td></tr>
+<tr><td>Errores</td><td>Pantalla o <code>?msg=error</code> manual</td><td><code>withErrors()</code> + <code>$errors</code> en Blade; 404 automático si no existe</td></tr>
+</table>
+
+<div class="alert alert-success">Archivos fuente comentados: <code>app/Models/Usuario.php</code>, <code>app/Http/Controllers/UsuarioController.php</code>, <code>routes/web.php</code>, <code>database/migrations/2026_10_04_...php</code>, <code>resources/views/usuarios/*.blade.php</code>. Guía corta en <code>README_CRUD_USUARIOS.md</code>.</div>
+</div>
+</body>
+</html>

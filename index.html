@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Página informativa sobre Laravel 12: qué es, características principales, requisitos e instalación paso a paso. Material de exposición universitaria." />
+  <title>Laravel 12 — Framework PHP para aplicaciones web modernas</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Encabezado principal con navegación -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#inicio" aria-label="Inicio — Laravel 12">
+        <img class="brand-logo" src="incos-logo-transparent.png" alt="Logotipo de INCOS" width="48" height="48" />
+        <span class="brand-text">Laravel <span class="brand-sub">· Exposición Cuarto Bimestre</span></span>
+      </a>
+      <nav class="site-nav" aria-label="Navegación principal">
+        <a href="#que-es">Qué es</a>
+        <a href="#caracteristicas">Características</a>
+        <a href="#instalacion">Instalación</a>
+        <a href="#recursos">Recursos</a>
+      </nav>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="Cambiar entre tema claro y oscuro">
+        <span class="theme-toggle-icon" aria-hidden="true">☀️</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="inicio">
+    <!-- Sección principal de presentación -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container hero-inner">
+        <p class="hero-kicker">Programación Web III · Cuarto bimestre</p>
+        <h1 id="hero-title">Laravel el framework PHP para construir aplicaciones web modernas</h1>
+        <p class="hero-subtitle">
+          Elegante, expresivo y productivo. Laravel ofrece enrutamiento, ORM, plantillas,
+          herramientas de línea de comandos y un ecosistema completo para desarrollar
+          más rápido sin sacrificar calidad.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="https://laravel.com/framework/docs/installation" target="_blank" rel="noopener">Documentación</a>
+          <a class="btn btn-secondary" href="https://laravel.com/" target="_blank" rel="noopener">Sitio oficial</a>
+        </div>
+        <p class="hero-note">Se abre con doble clic, sin compilación ni dependencias externas.</p>
+      </div>
+    </section>
+
+    <!-- Qué es Laravel -->
+    <section id="que-es" class="section" aria-labelledby="que-es-title">
+      <div class="container">
+        <h2 id="que-es-title">Qué es Laravel</h2>
+        <p class="section-lead">
+          Laravel es un framework de código abierto para PHP que sigue el patrón
+          Modelo–Vista–Controlador (MVC). Separa la lógica de negocio, la presentación
+          y el flujo de la aplicación para que el código sea ordenado, reutilizable y
+          fácil de mantener.
+        </p>
+        <div class="grid grid-2">
+          <article class="card">
+            <h3>Arquitectura MVC</h3>
+            <p>
+              Los <strong>modelos</strong> representan los datos, las <strong>vistas</strong>
+              presentan la información al usuario y los <strong>controladores</strong>
+              coordinan las peticiones. Esta separación facilita el trabajo en equipo
+              y las pruebas.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Eloquent ORM</h3>
+            <p>
+              Eloquent permite interactuar con la base de datos mediante clases de PHP
+              en lugar de escribir SQL manualmente. Cada tabla tiene su modelo y las
+              relaciones (uno a muchos, muchos a muchos) se expresan con métodos claros.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Blade</h3>
+            <p>
+              Blade es el motor de plantillas de Laravel. Permite crear diseños
+              reutilizables, componentes y estructuras de control con una sintaxis
+              sencilla que se compila a PHP puro para un rendimiento óptimo.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Artisan</h3>
+            <p>
+              Artisan es la interfaz de línea de comandos incluida en cada proyecto.
+              Genera controladores, modelos y migraciones, ejecuta el servidor local,
+              aplica migraciones y automatiza tareas repetitivas del desarrollo diario.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Por qué Laravel / características -->
+    <section id="caracteristicas" class="section section-alt" aria-labelledby="caracteristicas-title">
+      <div class="container">
+        <h2 id="caracteristicas-title">Por qué elegir Laravel</h2>
+        <p class="section-lead">
+          Estas seis capacidades explican por qué Laravel es uno de los frameworks
+          PHP más utilizados en proyectos profesionales y académicos.
+        </p>
+        <div class="grid grid-3">
+          <article class="card">
+            <h3>Enrutamiento expresivo</h3>
+            <p>
+              Define rutas claras para cada URL de la aplicación, con soporte para
+              parámetros, grupos, middleware y nombres de ruta que simplifican
+              el mantenimiento.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Eloquent ORM</h3>
+            <p>
+              Migraciones, fábricas de datos, relaciones y consultas encadenables
+              que reducen el SQL repetitivo y mantienen la base de datos bajo
+              control de versiones.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Blade</h3>
+            <p>
+              Plantillas con herencia de diseños, componentes reutilizables y
+              directivas intuitivas para construir interfaces consistentes
+              con menos código.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Artisan</h3>
+            <p>
+              Generadores de código, servidor de desarrollo, colas, programador
+              de tareas y comandos personalizados para automatizar el flujo
+              de trabajo.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Seguridad integrada</h3>
+            <p>
+              Protección contra inyección SQL, falsificación de peticiones (CSRF),
+              scripts entre sitios (XSS), cifrado y gestión de autenticación
+              y autorización listas para usar.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Ecosistema completo</h3>
+            <p>
+              Forge para aprovisionar servidores, Vapor para despliegue sin
+              servidor en AWS y Nova para paneles de administración. Todo el
+              ciclo de vida del proyecto queda cubierto.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Instalación -->
+    <section id="instalacion" class="section" aria-labelledby="instalacion-title">
+      <div class="container">
+        <h2 id="instalacion-title">Instalación paso a paso</h2>
+        <p class="section-lead">
+          Guía mínima para crear un proyecto Laravel 12 en un equipo local.
+          Verifique primero los requisitos y luego ejecute los comandos en orden.
+        </p>
+
+        <h3>Requisitos previos</h3>
+        <ul class="requirements">
+          <li><strong>PHP &gt;= 8.2</strong> con las extensiones requeridas por Laravel</li>
+          <li><strong>Composer</strong> (gestor de dependencias de PHP)</li>
+          <li><strong>Node.js + npm</strong> (para compilar recursos con Vite)</li>
+          <li><strong>Base de datos:</strong> SQLite (la opción más simple) o MySQL</li>
+          <li><strong>Git</strong> (para control de versiones)</li>
+        </ul>
+
+        <h3>Pasos de instalación</h3>
+        <ol class="steps">
+          <li>
+            <p><strong>Paso 1.</strong> Crear un proyecto nuevo con Composer:</p>
+            <pre><code>composer create-project laravel/laravel ejemplo-app</code></pre>
+          </li>
+          <li>
+            <p><strong>Paso 2.</strong> Entrar a la carpeta del proyecto:</p>
+            <pre><code>cd ejemplo-app</code></pre>
+          </li>
+          <li>
+            <p><strong>Paso 3.</strong> Instalar dependencias de interfaz y compilar recursos con Vite:</p>
+            <pre><code>npm install &amp;&amp; npm run dev</code></pre>
+          </li>
+          <li>
+            <p><strong>Paso 4.</strong> Iniciar el servidor local de desarrollo:</p>
+            <pre><code>php artisan serve</code></pre>
+            <p class="step-note">Luego abra en el navegador la dirección indicada (normalmente <code>http://127.0.0.1:8000</code>).</p>
+          </li>
+        </ol>
+
+        <aside class="note" aria-label="Alternativas de instalación">
+          <h3>Alternativas opcionales</h3>
+          <p>
+            <strong>Herd:</strong> entorno local para macOS y Windows que incluye PHP,
+            Composer y Nginx con un solo instalador, ideal para comenzar sin configurar
+            servidores manualmente.
+          </p>
+          <p>
+            <strong>Laravel Cloud:</strong> plataforma oficial para desplegar aplicaciones
+            Laravel sin administrar infraestructura, útil cuando el proyecto debe quedar
+            disponible en internet para la exposición.
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Recursos -->
+    <section id="recursos" class="section section-alt" aria-labelledby="recursos-title">
+      <div class="container">
+        <h2 id="recursos-title">Recursos para continuar</h2>
+        <p class="section-lead">
+          Fuentes oficiales para profundizar después de la exposición.
+        </p>
+        <ul class="resource-list">
+          <li>
+            <a href="https://laravel.com/framework/docs/installation" target="_blank" rel="noopener">Documentación de instalación de Laravel</a>
+            <span> — Guía oficial paso a paso.</span>
+          </li>
+          <li>
+            <a href="https://laravel.com/" target="_blank" rel="noopener">Sitio oficial de Laravel</a>
+            <span> — Novedades, ecosistema y punto de partida.</span>
+          </li>
+          <li>
+            <a href="https://laracasts.com/" target="_blank" rel="noopener">Laracasts</a>
+            <span> — Videotutoriales recomendados (recurso opcional).</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- Pie de página -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <img class="footer-logo" src="incos-logo-transparent.png" alt="Logotipo de INCOS" width="36" height="36" />
+      <p>Material de exposición · Programación Web III · <span id="year">2026</span></p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
